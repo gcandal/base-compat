@@ -1,0 +1,56 @@
+{
+    "name": "base-compat",
+    "version": "0.1.0",
+    "description": "Retro-compatible lookup for base.gov.pt",
+    "keywords": [
+        "base",
+        "gov",
+        "pt"
+    ],
+    "homepage": "https://github.com/gcandal/base-compat#readme",
+    "bugs": {
+        "url": "https://github.com/gcandal/base-compat/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gcandal/base-compat.git"
+    },
+    "license": "Apache-2.0",
+    "author": "Gabriel Candal",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt",
+        "generate": "nuxt generate",
+        "lint": "npm run lint:base && npm run lint:stylelint",
+        "lint-fix": "npm run lint-fix:base && npm run lint-fix:stylelint",
+        "lint-fix:base": "eslint \"./**/*.{js,vue}\" --fix",
+        "lint-fix:stylelint": "stylelint \"./**/*.{css,scss,vue}\" --fix",
+        "lint:base": "eslint \"./**/*.{js,vue}\"",
+        "lint:stylelint": "stylelint \"./**/*.{css,scss,vue}\"",
+        "prettier": "prettier \"./**/*.{js,vue,json}\" --write",
+        "pretty": "npm run prettier && npm run lint-fix && npm run svgo",
+        "start": "nuxt start",
+        "svgo": "svgo -r .",
+        "upgrade": "npx sort-package-json && ncu -u"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "core-js": "^3.9.1",
+        "express": "^4.17.1",
+        "nuxt": "^2.15.2",
+        "ripe-components-vue": "^0.8.27",
+        "vue-global-events": "^1.2.1",
+        "yonius": "^0.7.3"
+    },
+    "devDependencies": {
+        "@babel/plugin-transform-runtime": "^7.13.9",
+        "@babel/polyfill": "^7.12.1",
+        "babel-preset-vue": "^2.0.2",
+        "svgo": "^2.2.0",
+        "url-loader": "^4.1.1",
+        "uxf-webpack": "^0.8.2"
+    },
+    "engines": {
+        "node": ">=12"
+    }
+}

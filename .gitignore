@@ -1,0 +1,11 @@
+yarn.lock
+yonius.json
+package-lock.json
+
+.DS_Store
+
+/.nuxt
+/.vscode/settings.json
+
+/dist
+/node_modules
