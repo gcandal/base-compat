@@ -7,13 +7,6 @@
             "config": {
                 "serverFiles": ["package.json", "api/**"]
             }
-        },
-        {
-            "src": "package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "dist"
-            }
         }
     ]
 }
