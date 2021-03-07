@@ -7,19 +7,38 @@
                     <image-ripe class="search-image" v-bind:src="'logo-base.png'" />
                     <form-input
                         class="search-input"
+                        v-bind:header="'Procurar por URL'"
                         v-bind:footer="error || ' '"
                         v-bind:footer-variant="'error'"
                     >
-                        <input-ripe
+                        <search
                             v-bind:placeholder="
                                 'http://www.base.gov.pt/Base/pt/Pesquisa/Contrato?a=6436788'
                             "
                             v-bind:autofocus="true"
                             v-bind:value.sync="input"
                             v-bind:height="40"
-                            v-bind:font-weight="600"
+                            v-bind:loading="checkingUrl"
                         />
                     </form-input>
+                    <div class="replace-container">
+                        <form-input
+                            class="input-replace input-replace-original"
+                            v-bind:header="'Texto original'"
+                        >
+                            <textarea-ripe v-bind:value.sync="inputOriginal" v-bind:resize="true" />
+                        </form-input>
+                        <form-input
+                            class="input-replace input-replace-target"
+                            v-bind:header="'Texto corrigido'"
+                        >
+                            <textarea-ripe
+                                v-bind:value="inputTarget"
+                                v-bind:disabled="true"
+                                v-bind:resize="true"
+                            />
+                        </form-input>
+                    </div>
                 </container-ripe>
             </div>
         </div>
@@ -67,31 +86,48 @@ body.mobile .search {
     margin-top: 20px;
 }
 
-body.mobile .search > .search-container > .search-input .input {
-    border-radius: 8px 8px 8px 8px;
-    box-shadow: 0px 6px 15px rgb(36 37 38 / 8%);
-    margin: 32px auto 32px auto;
-}
-
-.search > .search-container > .search-input .input:focus {
-    border-color: transparent;
-    box-shadow: 0px 1px 8px 0px rgba(32, 33, 36, 0.18);
+.search > .search-container > .search-input .search {
+    padding: 0px 0px 0px 0px;
 }
 
 .search > .search-container > .search-input ::v-deep label {
     min-height: 13px;
 }
+
+.search > .search-container > .replace-container {
+    display: flex;
+    margin-top: 30px;
+}
+
+.search > .search-container > .replace-container > .input-replace {
+    flex: 1;
+}
+
+.search > .search-container > .replace-container > .input-replace:last-child {
+    margin-left: 20px;
+}
 </style>
 
 <script>
+import { verify } from "yonius";
+
 import { PAGE_MIXINS } from "./common";
 
 export const Index = {
     name: "index",
     mixins: [...PAGE_MIXINS],
+    props: {
+        delay: {
+            type: Number,
+            default: 500
+        }
+    },
     data: function() {
         return {
-            input: null
+            checkingUrl: false,
+            urlExists: null,
+            input: null,
+            inputOriginal: null
         };
     },
     computed: {
@@ -107,24 +143,59 @@ export const Index = {
             if (!this.inputMatch) return null;
             return this.inputMatch.id;
         },
-        inputTypeNew() {
+        inputType() {
             if (!this.inputMatch) return null;
-            return `${this.inputMatch.type.toLowerCase()}s`;
+            return this.inputMatch.type.toLowerCase();
         },
-        urlNew() {
-            if (!this.inputId || !this.inputTypeNew) return null;
-            return `https://www.base.gov.pt/Base4/pt/detalhe/?type=${this.inputId}&id=${this.inputTypeNew}`;
+        params() {
+            if (!this.inputId || !this.inputType) return null;
+            return {
+                id: this.inputId,
+                type: this.inputType
+            };
         },
         error() {
             if (!this.input) return null;
-            if (this.inputMatch) return null;
-            return "O URL não é válido";
+            if (!this.inputMatch) return "O formato do URL não é válido";
+            if (this.urlExists === false)
+                { return `O documento com o tipo '${this.inputType}' e ID '${this.inputId}' não existe`; }
+            return null;
+        },
+        inputTarget() {
+            if (!this.inputOriginal) return null;
+            return this.inputOriginal.replace(
+                /\bhttp:\/\/www.base.gov.pt\/Base\/pt\/Pesquisa\/(?<type>[a-zA-Z]+)\?a=(?<id>[0-9]+)\b/gi,
+                (math, type, id) =>
+                    `https://www.base.gov.pt/Base4/pt/detalhe/?type=${type.toLowerCase()}s&id=${id}`
+            );
         }
     },
     watch: {
-        urlNew(value) {
+        input(value) {
+            this.urlExists = null;
+        },
+        params(value) {
             if (!value) return;
-            window.open(value);
+            setTimeout(() => this.checkAndOpen(value.id, value.type), this.delay);
+        }
+    },
+    methods: {
+        async checkAndOpen(id, type) {
+            this.checkingUrl = true;
+            try {
+                const params = new URLSearchParams({ id: id, type: type });
+                const result = await fetch(`/api/entities?${params.toString()}`);
+
+                verify(result.ok);
+                const json = await result.json();
+
+                this.urlExists = true;
+                window.open(json.originalUrl);
+            } catch (err) {
+                this.urlExists = false;
+            } finally {
+                this.checkingUrl = false;
+            }
         }
     }
 };

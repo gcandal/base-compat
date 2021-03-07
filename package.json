@@ -1,7 +1,7 @@
 {
     "name": "base-compat",
     "version": "0.1.0",
-    "description": "Retro-compatible lookup for base.gov.pt",
+    "description": "base.gov.pt lookup",
     "keywords": [
         "base",
         "gov",
@@ -37,6 +37,7 @@
         "body-parser": "^1.19.0",
         "core-js": "^3.9.1",
         "express": "^4.17.1",
+        "node-fetch": "^2.6.1",
         "nuxt": "^2.15.2",
         "ripe-components-vue": "^0.8.27",
         "vue-global-events": "^1.2.1",
