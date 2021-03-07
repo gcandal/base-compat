@@ -47,7 +47,7 @@
         "@babel/plugin-transform-runtime": "^7.13.9",
         "@babel/polyfill": "^7.12.1",
         "babel-preset-vue": "^2.0.2",
-        "svgo": "^2.2.0",
+        "svgo": "^2.2.1",
         "url-loader": "^4.1.1",
         "uxf-webpack": "^0.8.2"
     },
